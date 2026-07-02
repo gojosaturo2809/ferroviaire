@@ -1,72 +1,41 @@
 package mg.itu.ferroviaire.entity;
 
+import java.time.LocalDate;
+import java.util.List;
 
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
-
-@Entity
-@Table(name = "voyage")
 public class Voyage {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private Integer trainId;
+    private Integer trajetId;
+    private LocalDate dateVoyage;
+    private List<ArretVoyage> arrets;
 
-    @ManyToOne
-    @JoinColumn(name = "train_id")
-    private Train train;
-
-    @Column(name = "heure_de_depart")
-    private LocalDateTime heureDeDepart;
-
-    @ManyToOne
-    @JoinColumn(name = "gare_depart_id")
-    private Gare gareDepart;
-
-    @ManyToOne
-    @JoinColumn(name = "gare_arrive_id")
-    private Gare gareArrive;
-
-    public Voyage() {
+    public Voyage(Integer id, Integer trainId, Integer trajetId, LocalDate dateVoyage, List<ArretVoyage> arrets) {
+        this.id = id;
+        this.trainId = trainId;
+        this.trajetId = trajetId;
+        this.dateVoyage = dateVoyage;
+        this.arrets = arrets;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public Integer getTrainId() {
+        return trainId;
     }
 
-    public Train getTrain() {
-        return train;
+    public Integer getTrajetId() {
+        return trajetId;
     }
 
-    public void setTrain(Train train) {
-        this.train = train;
+    public LocalDate getDateVoyage() {
+        return dateVoyage;
     }
 
-    public LocalDateTime getHeureDeDepart() {
-        return heureDeDepart;
-    }
-
-    public void setHeureDeDepart(LocalDateTime heureDeDepart) {
-        this.heureDeDepart = heureDeDepart;
-    }
-
-    public Gare getGareDepart() {
-        return gareDepart;
-    }
-
-    public void setGareDepart(Gare gareDepart) {
-        this.gareDepart = gareDepart;
-    }
-
-    public Gare getGareArrive() {
-        return gareArrive;
-    }
-
-    public void setGareArrive(Gare gareArrive) {
-        this.gareArrive = gareArrive;
+    public List<ArretVoyage> getArrets() {
+        return arrets;
     }
 }
