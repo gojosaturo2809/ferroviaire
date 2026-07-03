@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rechercher un trajet — SIG Ferroviaire</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/bandeau :: bandeau('recherche')}"></div>
+
+<div class="page">
+
+    <div class="entete-page">
+        <p class="entete-page__eyebrow">Module 02 — Moteur d'itinéraires</p>
+        <h1 class="entete-page__titre">Rechercher un trajet</h1>
+        <p class="entete-page__intro">
+            Indiquez votre gare de départ, votre gare d'arrivée et un horizon temporel.
+            Le moteur calcule systématiquement les trajets directs ainsi que les trajets
+            avec escale(s), en validant chaque correspondance.
+        </p>
+    </div>
+
+    <form class="formulaire-recherche" method="get" action="/recherche">
+        <div class="formulaire-recherche__grille">
+            <div>
+                <label class="champ-label" for="gareDepart">Gare de départ</label>
+                <select id="gareDepart" name="gareDepart" required>
+                    <option value="">— Choisir —</option>
+                    <option th:each="g : ${gares}"
+                            th:value="${g.id}"
+                            th:text="${g.nom}"
+                            th:selected="${gareDepartSel != null and gareDepartSel == g.id}"></option>
+                </select>
+            </div>
+
+            <div class="formulaire-recherche__inversion">
+                <button type="button" class="bouton-inversion" id="boutonInversion" title="Inverser départ / arrivée">⇄</button>
+            </div>
+
+            <div>
+                <label class="champ-label" for="gareArrivee">Gare d'arrivée</label>
+                <select id="gareArrivee" name="gareArrivee" required>
+                    <option value="">— Choisir —</option>
+                    <option th:each="g : ${gares}"
+                            th:value="${g.id}"
+                            th:text="${g.nom}"
+                            th:selected="${gareArriveeSel != null and gareArriveeSel == g.id}"></option>
+                </select>
+            </div>
+
+            <div>
+                <label class="champ-label" for="heureDepart">À partir de (optionnel)</label>
+                <input type="time" id="heureDepart" name="heureDepart" th:value="${heureDepartSel}">
+            </div>
+
+            <div>
+                <button type="submit" class="bouton bouton--principal" style="width:100%;justify-content:center;">Rechercher</button>
+            </div>
+        </div>
+    </form>
+
+    <div th:if="${erreur}" class="message-erreur" th:text="${erreur}"></div>
+
+    <th:block th:if="${rechercheEffectuee and erreur == null}">
+
+        <div th:if="${aucunResultat}" class="message-vide" style="padding:2.5rem;">
+            Aucun itinéraire trouvé pour cette combinaison gare / heure. Essayez une autre heure de départ.
+        </div>
+
+        <!-- Trajets directs (F2.3.1) -->
+        <section class="section-resultats" th:if="${not aucunResultat and not #lists.isEmpty(propositionsDirectes)}">
+            <h2 class="section-resultats__titre">
+                Trajets directs
+                <span class="pastille-compte" th:text="${#lists.size(propositionsDirectes)}"></span>
+            </h2>
+
+            <div class="ticket-itineraire" th:each="prop : ${propositionsDirectes}">
+                <div class="ticket-itineraire__bande"></div>
+                <div class="ticket-itineraire__corps">
+                    <div class="ticket-itineraire__resume">
+                        <div>
+                            <span class="ticket-itineraire__duree" th:text="${prop.dureeTotaleFormatee}"></span>
+                            <span class="badge-direct">Direct</span>
+                        </div>
+                        <div class="ticket-itineraire__meta">
+                            <div th:text="${#numbers.formatDecimal(prop.distanceTotaleKm, 1, 1)} + ' km parcourus'"></div>
+                        </div>
+                    </div>
+
+                    <div class="parcours-segment" th:each="seg : ${prop.segments}">
+                        <div class="parcours-segment__horaires">
+                            <div th:text="${#temporals.format(seg.heureDepart, 'HH:mm')}"></div>
+                            <div th:text="${#temporals.format(seg.heureArrivee, 'HH:mm')}"></div>
+                        </div>
+                        <div>
+                            <div class="parcours-segment__gares" th:text="${seg.gareDepartNom} + ' → ' + ${seg.gareArriveeNom}"></div>
+                            <div class="parcours-segment__details" th:text="${seg.trainMarque} + ' · ' + ${seg.nomLigne} + ' · ' + ${#numbers.formatDecimal(seg.distanceKm,1,1)} + ' km'"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trajets avec escale (F2.3.2) -->
+        <section class="section-resultats" th:if="${not aucunResultat and not #lists.isEmpty(propositionsEscale)}">
+            <h2 class="section-resultats__titre section-resultats__titre--escale">
+                Trajets avec escale
+                <span class="pastille-compte" th:text="${#lists.size(propositionsEscale)}"></span>
+            </h2>
+
+            <div class="ticket-itineraire ticket-itineraire--escale" th:each="prop : ${propositionsEscale}">
+                <div class="ticket-itineraire__bande"></div>
+                <div class="ticket-itineraire__corps">
+                    <div class="ticket-itineraire__resume">
+                        <div>
+                            <span class="ticket-itineraire__duree" th:text="${prop.dureeTotaleFormatee}"></span>
+                            <span class="badge-escale" th:text="${prop.nombreEscales} + ' escale(s)'"></span>
+                        </div>
+                        <div class="ticket-itineraire__meta">
+                            <div th:text="${#numbers.formatDecimal(prop.distanceTotaleKm, 1, 1)} + ' km parcourus'"></div>
+                        </div>
+                    </div>
+
+                    <th:block th:each="seg, iterStat : ${prop.segments}">
+                        <div class="parcours-segment">
+                            <div class="parcours-segment__horaires">
+                                <div th:text="${#temporals.format(seg.heureDepart, 'HH:mm')}"></div>
+                                <div th:text="${#temporals.format(seg.heureArrivee, 'HH:mm')}"></div>
+                            </div>
+                            <div>
+                                <div class="parcours-segment__gares" th:text="${seg.gareDepartNom} + ' → ' + ${seg.gareArriveeNom}"></div>
+                                <div class="parcours-segment__details" th:text="${seg.trainMarque} + ' · ' + ${seg.nomLigne} + ' · ' + ${#numbers.formatDecimal(seg.distanceKm,1,1)} + ' km'"></div>
+                            </div>
+                        </div>
+
+                        <div class="bandeau-correspondance" th:if="${!iterStat.last}">
+                            ⏱ Correspondance à <span th:text="${seg.gareArriveeNom}"></span> —
+                            attente de
+                            <span th:text="${prop.tempsAttenteEscales.get(iterStat.index).toMinutes()} + ' min'"></span>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+        </section>
+
+    </th:block>
+
+</div>
+
+<script th:src="@{/js/recherche.js}"></script>
+
+</body>
+</html>
