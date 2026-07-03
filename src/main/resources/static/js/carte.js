@@ -17,6 +17,7 @@ const calqueGares = L.layerGroup().addTo(carte);
 const calqueHabillage = L.layerGroup().addTo(carte);
 
 const marqueursGares = {}; // id -> L.Marker
+let gareSelectionneeId = null;
 
 function couleurStatut(statut) {
     if (statut === 'PRINCIPALE') return '#C2622D';
@@ -28,15 +29,64 @@ function rayonStatut(statut) {
     return statut === 'PRINCIPALE' ? 9 : 6;
 }
 
-function iconeGare(gare) {
-    return L.circleMarker([gare.lat, gare.lng], {
+function styleDefaut(gare) {
+    return {
         radius: rayonStatut(gare.statut),
         fillColor: couleurStatut(gare.statut),
         color: '#F0E9DC',
         weight: 2,
         fillOpacity: 1
-    });
+    };
 }
+
+function styleSelectionne(gare) {
+    return {
+        radius: rayonStatut(gare.statut) + 5,
+        fillColor: '#E8B33D',
+        color: '#1A2B2E',
+        weight: 3,
+        fillOpacity: 1
+    };
+}
+
+function iconeGare(gare) {
+    return L.circleMarker([gare.lat, gare.lng], styleDefaut(gare));
+}
+
+/** Marque une gare comme selectionnee : restyle l'ancienne, met la nouvelle en evidence + au premier plan. */
+function selectionnerGare(gareId, { centrer = false } = {}) {
+    if (gareSelectionneeId !== null && marqueursGares[gareSelectionneeId]) {
+        const ancien = marqueursGares[gareSelectionneeId];
+        ancien.setStyle(styleDefaut(ancien.gareData));
+    }
+
+    gareSelectionneeId = gareId ? Number(gareId) : null;
+    selectGare.value = gareSelectionneeId ?? '';
+
+    const marqueur = gareSelectionneeId ? marqueursGares[gareSelectionneeId] : null;
+    if (marqueur) {
+        marqueur.setStyle(styleSelectionne(marqueur.gareData));
+        marqueur.bringToFront();
+        if (centrer) carte.panTo(marqueur.getLatLng());
+    }
+}
+
+// -------------------- Legende --------------------
+
+const legende = L.control({ position: 'bottomleft' });
+legende.onAdd = function () {
+    const div = L.DomUtil.create('div', 'legende-carte');
+    div.innerHTML = `
+        <div class="legende-carte__titre">Gares</div>
+        <div class="legende-carte__item"><span class="legende-carte__pastille" style="background:#C2622D"></span>Principale</div>
+        <div class="legende-carte__item"><span class="legende-carte__pastille" style="background:#E8B33D"></span>Triage</div>
+        <div class="legende-carte__item"><span class="legende-carte__pastille" style="background:#5C7E6A"></span>Halte</div>
+        <div class="legende-carte__item"><span class="legende-carte__pastille legende-carte__pastille--select"></span>Sélectionnée</div>
+    `;
+    L.DomEvent.disableClickPropagation(div);
+    return div;
+};
+legende.addTo(carte);
 
 // -------------------- F1.1 : chargement du reseau --------------------
 
@@ -54,11 +104,20 @@ fetch('/api/reseau')
 
         data.gares.forEach(gare => {
             const marqueur = iconeGare(gare).addTo(calqueGares);
+            marqueur.gareData = gare;
             marqueur.bindTooltip(gare.nom + ' — ' + gare.statutLibelle, { direction: 'top', offset: [0, -8] });
+
+            marqueur.on('mouseover', () => {
+                if (gare.id !== gareSelectionneeId) marqueur.setStyle({ weight: 3 });
+            });
+            marqueur.on('mouseout', () => {
+                if (gare.id !== gareSelectionneeId) marqueur.setStyle({ weight: 2 });
+            });
             marqueur.on('click', () => {
-                document.getElementById('selectGare').value = gare.id;
+                selectionnerGare(gare.id);
                 chargerFluxGare(gare.id);
             });
+
             marqueursGares[gare.id] = marqueur;
         });
     })
@@ -113,7 +172,10 @@ function chargerFluxGare(gareId) {
         });
 }
 
-selectGare.addEventListener('change', () => chargerFluxGare(selectGare.value));
+selectGare.addEventListener('change', () => {
+    selectionnerGare(selectGare.value, { centrer: true });
+    chargerFluxGare(selectGare.value);
+});
 inputHeure.addEventListener('change', () => {
     if (selectGare.value) chargerFluxGare(selectGare.value);
 });

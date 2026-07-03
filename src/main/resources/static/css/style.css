@@ -513,6 +513,50 @@ select:focus, input:focus {
   border-radius: var(--rayon);
 }
 
+/* Legende carte (statuts de gare) */
+
+.legende-carte {
+  background: var(--ardoise-clair);
+  border: 1px solid var(--ardoise-trait);
+  border-radius: var(--rayon);
+  padding: 0.7rem 0.9rem;
+  box-shadow: var(--ombre);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--creme-fonce);
+}
+
+.legende-carte__titre {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--jaune-signal);
+  margin-bottom: 0.4rem;
+}
+
+.legende-carte__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.15rem 0;
+  white-space: nowrap;
+}
+
+.legende-carte__pastille {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--creme);
+  flex-shrink: 0;
+}
+
+.legende-carte__pastille--select {
+  background: var(--jaune-signal);
+  border-color: var(--ardoise);
+  box-shadow: 0 0 0 2px var(--jaune-signal);
+}
+
 /* Etiquette Leaflet pour habillage temporel (F1.3) */
 
 .etiquette-temps {
