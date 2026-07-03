@@ -1,0 +1,461 @@
+{
+  "feature_count": 877,
+  "geometry_types": {
+    "LINESTRING": 822,
+    "POINT": 54,
+    "POLYGON": 1
+  },
+  "bbox": [
+    47.0356574,
+    -22.1437905,
+    49.4282048,
+    -17.760877
+  ],
+  "columns": [
+    {
+      "name": "id",
+      "type": "VARCHAR",
+      "null_count": 0,
+      "null_percent": 0.0,
+      "distinct_count": 877,
+      "top_values": [
+        {
+          "value": "way/429475687",
+          "count": 1
+        },
+        {
+          "value": "way/1426379237",
+          "count": 1
+        },
+        {
+          "value": "way/429475688",
+          "count": 1
+        },
+        {
+          "value": "way/169161728",
+          "count": 1
+        },
+        {
+          "value": "way/169161729",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "name",
+      "type": "VARCHAR",
+      "null_count": 215,
+      "null_percent": 24.52,
+      "distinct_count": 68,
+      "top_values": [
+        {
+          "value": "Tananarive C\u00f4te Est",
+          "count": 182
+        },
+        {
+          "value": "Fianarantsoa-C\u00f4te Est",
+          "count": 157
+        },
+        {
+          "value": "Tananarive Antsirabe",
+          "count": 100
+        },
+        {
+          "value": "FCE",
+          "count": 78
+        },
+        {
+          "value": "Moramanga Lac Alaotra",
+          "count": 51
+        }
+      ]
+    },
+    {
+      "name": "name_en",
+      "type": "VARCHAR",
+      "null_count": 877,
+      "null_percent": 100.0,
+      "distinct_count": 0,
+      "top_values": []
+    },
+    {
+      "name": "name_mg",
+      "type": "VARCHAR",
+      "null_count": 877,
+      "null_percent": 100.0,
+      "distinct_count": 0,
+      "top_values": []
+    },
+    {
+      "name": "name_fr",
+      "type": "VARCHAR",
+      "null_count": 877,
+      "null_percent": 100.0,
+      "distinct_count": 0,
+      "top_values": []
+    },
+    {
+      "name": "railway",
+      "type": "VARCHAR",
+      "null_count": 0,
+      "null_percent": 0.0,
+      "distinct_count": 2,
+      "top_values": [
+        {
+          "value": "rail",
+          "count": 822
+        },
+        {
+          "value": "station",
+          "count": 55
+        }
+      ]
+    },
+    {
+      "name": "ele",
+      "type": "VARCHAR",
+      "null_count": 877,
+      "null_percent": 100.0,
+      "distinct_count": 0,
+      "top_values": []
+    },
+    {
+      "name": "operator_type",
+      "type": "VARCHAR",
+      "null_count": 877,
+      "null_percent": 100.0,
+      "distinct_count": 0,
+      "top_values": []
+    },
+    {
+      "name": "layer",
+      "type": "VARCHAR",
+      "null_count": 599,
+      "null_percent": 68.3,
+      "distinct_count": 2,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 203
+        },
+        {
+          "value": "-1",
+          "count": 75
+        }
+      ]
+    },
+    {
+      "name": "addr_full",
+      "type": "VARCHAR",
+      "null_count": 877,
+      "null_percent": 100.0,
+      "distinct_count": 0,
+      "top_values": []
+    },
+    {
+      "name": "addr_city",
+      "type": "VARCHAR",
+      "null_count": 877,
+      "null_percent": 100.0,
+      "distinct_count": 0,
+      "top_values": []
+    },
+    {
+      "name": "source",
+      "type": "VARCHAR",
+      "null_count": 877,
+      "null_percent": 100.0,
+      "distinct_count": 0,
+      "top_values": []
+    },
+    {
+      "name": "adm0_pcode",
+      "type": "VARCHAR",
+      "null_count": 0,
+      "null_percent": 0.0,
+      "distinct_count": 1,
+      "top_values": [
+        {
+          "value": "MDG",
+          "count": 877
+        }
+      ]
+    },
+    {
+      "name": "adm0_name",
+      "type": "VARCHAR",
+      "null_count": 0,
+      "null_percent": 0.0,
+      "distinct_count": 1,
+      "top_values": [
+        {
+          "value": "Madagascar",
+          "count": 877
+        }
+      ]
+    },
+    {
+      "name": "adm1_pcode",
+      "type": "VARCHAR",
+      "null_count": 3,
+      "null_percent": 0.34,
+      "distinct_count": 6,
+      "top_values": [
+        {
+          "value": "MG23",
+          "count": 237
+        },
+        {
+          "value": "MG33",
+          "count": 193
+        },
+        {
+          "value": "MG31",
+          "count": 148
+        },
+        {
+          "value": "MG11",
+          "count": 137
+        },
+        {
+          "value": "MG12",
+          "count": 103
+        }
+      ]
+    },
+    {
+      "name": "adm1_name",
+      "type": "VARCHAR",
+      "null_count": 3,
+      "null_percent": 0.34,
+      "distinct_count": 6,
+      "top_values": [
+        {
+          "value": "Vatovavy Fitovinany",
+          "count": 237
+        },
+        {
+          "value": "Alaotra Mangoro",
+          "count": 193
+        },
+        {
+          "value": "Atsinanana",
+          "count": 148
+        },
+        {
+          "value": "Analamanga",
+          "count": 137
+        },
+        {
+          "value": "Vakinankaratra",
+          "count": 103
+        }
+      ]
+    },
+    {
+      "name": "adm2_pcode",
+      "type": "VARCHAR",
+      "null_count": 3,
+      "null_percent": 0.34,
+      "distinct_count": 21,
+      "top_values": [
+        {
+          "value": "MG33314",
+          "count": 137
+        },
+        {
+          "value": "MG23211",
+          "count": 137
+        },
+        {
+          "value": "MG23210",
+          "count": 100
+        },
+        {
+          "value": "MG31306",
+          "count": 84
+        },
+        {
+          "value": "MG12110",
+          "count": 47
+        }
+      ]
+    },
+    {
+      "name": "adm2_name",
+      "type": "VARCHAR",
+      "null_count": 3,
+      "null_percent": 0.34,
+      "distinct_count": 21,
+      "top_values": [
+        {
+          "value": "Ikongo",
+          "count": 137
+        },
+        {
+          "value": "Moramanga",
+          "count": 137
+        },
+        {
+          "value": "Manakara Atsimo",
+          "count": 100
+        },
+        {
+          "value": "Brickaville",
+          "count": 84
+        },
+        {
+          "value": "Ambatolampy",
+          "count": 47
+        }
+      ]
+    },
+    {
+      "name": "adm3_pcode",
+      "type": "VARCHAR",
+      "null_count": 3,
+      "null_percent": 0.34,
+      "distinct_count": 85,
+      "top_values": [
+        {
+          "value": "MG23211091",
+          "count": 88
+        },
+        {
+          "value": "MG23211051",
+          "count": 49
+        },
+        {
+          "value": "MG11101001",
+          "count": 31
+        },
+        {
+          "value": "MG31301001",
+          "count": 25
+        },
+        {
+          "value": "MG33314010",
+          "count": 24
+        }
+      ]
+    },
+    {
+      "name": "adm3_name",
+      "type": "VARCHAR",
+      "null_count": 3,
+      "null_percent": 0.34,
+      "distinct_count": 83,
+      "top_values": [
+        {
+          "value": "Tolongoina",
+          "count": 88
+        },
+        {
+          "value": "Manampatrana",
+          "count": 49
+        },
+        {
+          "value": "1er Arrondissement",
+          "count": 31
+        },
+        {
+          "value": "Ambodimanga",
+          "count": 25
+        },
+        {
+          "value": "Moramanga",
+          "count": 24
+        }
+      ]
+    },
+    {
+      "name": "adm4_pcode",
+      "type": "VARCHAR",
+      "null_count": 3,
+      "null_percent": 0.34,
+      "distinct_count": 214,
+      "top_values": [
+        {
+          "value": "MG11101001033",
+          "count": 31
+        },
+        {
+          "value": "MG23211051002",
+          "count": 30
+        },
+        {
+          "value": "MG23211091006",
+          "count": 25
+        },
+        {
+          "value": "MG23211091005",
+          "count": 21
+        },
+        {
+          "value": "MG33314010009",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "name": "adm4_name",
+      "type": "VARCHAR",
+      "null_count": 3,
+      "null_percent": 0.34,
+      "distinct_count": 208,
+      "top_values": [
+        {
+          "value": "67ha Avaratra Andrefana",
+          "count": 31
+        },
+        {
+          "value": "Amboanjobe Gara",
+          "count": 30
+        },
+        {
+          "value": "Ambodivanana",
+          "count": 25
+        },
+        {
+          "value": "Andrambovato",
+          "count": 21
+        },
+        {
+          "value": "Camp Des Maries",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "name": "name_latin",
+      "type": "VARCHAR",
+      "null_count": 215,
+      "null_percent": 24.52,
+      "distinct_count": 68,
+      "top_values": [
+        {
+          "value": "Tananarive Cote Est",
+          "count": 182
+        },
+        {
+          "value": "Fianarantsoa-Cote Est",
+          "count": 157
+        },
+        {
+          "value": "Tananarive Antsirabe",
+          "count": 100
+        },
+        {
+          "value": "FCE",
+          "count": 78
+        },
+        {
+          "value": "Moramanga Lac Alaotra",
+          "count": 51
+        }
+      ]
+    }
+  ],
+  "summary": "877 features. geometry types: 822 LINESTRING, 54 POINT, 1 POLYGON. 9 of 23 columns are >=50% null (name_en, name_mg, name_fr, ele, operator_type, layer, addr_full, addr_city, source).",
+  "temporal": null
+}

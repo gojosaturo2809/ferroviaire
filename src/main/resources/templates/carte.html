@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte du réseau — SIG Ferroviaire</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+</head>
+<body>
+
+<div th:replace="~{fragments/bandeau :: bandeau('carte')}"></div>
+
+<div class="mise-en-page-carte">
+
+    <aside class="panneau-laterale">
+
+        <div class="bloc-controle">
+            <h2>Consulter une gare</h2>
+            <label class="champ-label" for="selectGare">Gare</label>
+            <select id="selectGare">
+                <option value="">— Cliquez sur la carte ou choisissez —</option>
+                <option th:each="g : ${gares}" th:value="${g.id}" th:text="${g.nom}"></option>
+            </select>
+
+            <label class="champ-label" for="inputHeure" style="margin-top:0.4rem;">Heure de référence (t)</label>
+            <input type="time" id="inputHeure" value="08:00">
+        </div>
+
+        <div id="panneauFlux">
+            <p class="message-vide">Sélectionnez une gare pour voir les départs et trains en transit à partir de l'heure choisie.</p>
+        </div>
+
+        <div class="bloc-controle">
+            <h2>Afficher un voyage</h2>
+            <label class="champ-label" for="selectVoyage">Train / voyage</label>
+            <select id="selectVoyage">
+                <option value="">— Aucun —</option>
+            </select>
+            <button type="button" id="btnRejouerVoyage" class="bouton-rejouer" disabled>Rejouer le trajet</button>
+        </div>
+
+    </aside>
+
+    <div class="carte-conteneur">
+        <div id="carteLeaflet"></div>
+    </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script th:src="@{/js/carte.js}"></script>
+
+</body>
+</html>
