@@ -513,6 +513,55 @@ select:focus, input:focus {
   border-radius: var(--rayon);
 }
 
+/* Distinction visuelle du trajet d'un voyage selectionne (F1.3) */
+
+.voie-active {
+    stroke-dasharray: 10 8;
+    animation: flux-voie 0.9s linear infinite;
+    filter: drop-shadow(0 0 3px rgba(232, 179, 61, 0.8));
+}
+
+@keyframes flux-voie {
+    to { stroke-dashoffset: -18; }
+}
+
+.train-icone {
+    font-size: 1.3rem;
+    line-height: 22px;
+    text-align: center;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
+    animation: pulse-train 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-train {
+    from { transform: scale(1); }
+    to   { transform: scale(1.15); }
+}
+
+.bouton-rejouer {
+    background: var(--rouille);
+    color: var(--creme);
+    border: none;
+    border-radius: var(--rayon);
+    padding: 0.55rem 0.7rem;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.bouton-rejouer:hover:not(:disabled) {
+    background: var(--rouille-clair);
+}
+
+.bouton-rejouer:disabled {
+    background: var(--ardoise-trait);
+    color: var(--creme-fonce);
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* Legende carte (statuts de gare) */
 
 .legende-carte {

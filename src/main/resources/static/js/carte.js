@@ -19,6 +19,36 @@ const calqueHabillage = L.layerGroup().addTo(carte);
 const marqueursGares = {}; // id -> L.Marker
 let gareSelectionneeId = null;
 
+const segmentsIndex = []; // {id, gareDepartId, gareArriveeId, latlngs, poly}
+const grapheVoies = {};   // gareId -> [{versId, segment}]
+const calqueTrain = L.layerGroup().addTo(carte);
+let animationTrainId = null;
+let dernierTrajetActif = null; // {segmentsOrdonnes, dureesMinutes} pour le bouton "Rejouer"
+
+function ajouterArc(a, b, segment) {
+    if (!grapheVoies[a]) grapheVoies[a] = [];
+    grapheVoies[a].push({ versId: b, segment });
+}
+
+/** Retrouve la suite de segments reels reliant deux gares (BFS, gere les gares non desservies entre deux arrets). */
+function chercherCheminSegments(depuisId, versId) {
+    if (depuisId === versId) return [];
+    const visites = new Set([depuisId]);
+    const file = [{ gareId: depuisId, chemin: [] }];
+    while (file.length) {
+        const { gareId, chemin } = file.shift();
+        const voisins = grapheVoies[gareId] || [];
+        for (const { versId: suivantId, segment } of voisins) {
+            if (visites.has(suivantId)) continue;
+            const nouveauChemin = [...chemin, { segment, depart: gareId, arrivee: suivantId }];
+            if (suivantId === versId) return nouveauChemin;
+            visites.add(suivantId);
+            file.push({ gareId: suivantId, chemin: nouveauChemin });
+        }
+    }
+    return [];
+}
+
 function couleurStatut(statut) {
     if (statut === 'PRINCIPALE') return '#C2622D';
     if (statut === 'TRI') return '#E8B33D';
@@ -37,6 +67,23 @@ function styleDefaut(gare) {
         weight: 2,
         fillOpacity: 1
     };
+}
+
+const styleVoieDefaut = { color: '#5C7E6A', weight: 3, opacity: 0.85, className: 'voie-defaut' };
+const styleVoieInactive = { color: '#5C7E6A', weight: 2, opacity: 0.25, className: 'voie-inactive' };
+const styleVoieActive = { color: '#E8B33D', weight: 5, opacity: 1, className: 'voie-active' };
+
+/** Remet toutes les voies dans leur etat neutre (aucun trajet en surbrillance). */
+function reinitialiserVoies() {
+    segmentsIndex.forEach(s => s.poly.setStyle(styleVoieDefaut));
+}
+
+/** Met en surbrillance uniquement les segments d'ids donnes, estompe les autres. */
+function mettreEnValeurSegments(idsActifs) {
+    segmentsIndex.forEach(s => {
+        s.poly.setStyle(idsActifs.has(s.id) ? styleVoieActive : styleVoieInactive);
+        if (idsActifs.has(s.id)) s.poly.bringToFront();
+    });
 }
 
 function styleSelectionne(gare) {
@@ -95,11 +142,16 @@ fetch('/api/reseau')
     .then(data => {
         data.segments.forEach(seg => {
             const latlngs = seg.trace.map(p => [p[0], p[1]]);
-            L.polyline(latlngs, {
-                color: '#5C7E6A',
-                weight: 3,
-                opacity: 0.85
-            }).addTo(calqueVoies);
+            const poly = L.polyline(latlngs, styleVoieDefaut).addTo(calqueVoies);
+            segmentsIndex.push({
+                id: seg.id,
+                gareDepartId: seg.gareDepartId,
+                gareArriveeId: seg.gareArriveeId,
+                latlngs,
+                poly
+            });
+            ajouterArc(seg.gareDepartId, seg.gareArriveeId, seg);
+            ajouterArc(seg.gareArriveeId, seg.gareDepartId, seg);
         });
 
         data.gares.forEach(gare => {
@@ -195,9 +247,104 @@ fetch('/api/voyages')
         });
     });
 
+/** A partir des arrets d'un voyage, retrouve la trace GPS reelle empruntee (via le graphe des segments)
+ *  et les segments a mettre en surbrillance sur la carte. Gere les gares sautees (train direct). */
+function calculerTrajetReel(data) {
+    const arretsValides = data.arrets.filter(a => a.lat != null);
+    const idsSegmentsActifs = new Set();
+    const parcelles = [];
+
+    for (let i = 0; i < arretsValides.length - 1; i++) {
+        const a = arretsValides[i];
+        const b = arretsValides[i + 1];
+        const chemin = chercherCheminSegments(a.gareId, b.gareId);
+        const points = [[a.lat, a.lng]];
+
+        chemin.forEach(etape => {
+            idsSegmentsActifs.add(etape.segment.id);
+            const segRef = segmentsIndex.find(s => s.id === etape.segment.id);
+            const coords = etape.depart === segRef.gareDepartId ? segRef.latlngs : [...segRef.latlngs].reverse();
+            coords.forEach((c, idx) => { if (idx > 0) points.push(c); });
+        });
+
+        const infosParcelle = data.parcelles.find(p => p.gareDepartId === a.gareId && p.gareArriveeId === b.gareId);
+        parcelles.push({ points, dureeMinutes: infosParcelle ? infosParcelle.dureeMinutes : 1 });
+    }
+    return { idsSegmentsActifs, parcelles };
+}
+
+/** Position interpolee le long d'une trace (par longueur d'arc, t entre 0 et 1) : mouvement a vitesse constante. */
+function pointSurTrace(points, t) {
+    if (points.length === 1) return points[0];
+    const longueurs = [];
+    let total = 0;
+    for (let i = 0; i < points.length - 1; i++) {
+        const d = L.latLng(points[i]).distanceTo(L.latLng(points[i + 1]));
+        longueurs.push(d);
+        total += d;
+    }
+    if (total === 0) return points[0];
+    let cible = t * total, cumul = 0;
+    for (let i = 0; i < longueurs.length; i++) {
+        if (cumul + longueurs[i] >= cible) {
+            const frac = (cible - cumul) / longueurs[i];
+            const [lat1, lng1] = points[i], [lat2, lng2] = points[i + 1];
+            return [lat1 + (lat2 - lat1) * frac, lng1 + (lng2 - lng1) * frac];
+        }
+        cumul += longueurs[i];
+    }
+    return points[points.length - 1];
+}
+
+const DUREE_REPLAY_MS = 9000; // duree totale de l'animation, independante de la duree reelle du voyage
+
+/** Effet waouh : rejoue le voyage sur la carte, un petit train parcourt la trace GPS reelle,
+ *  chaque troncon dure proportionnellement a sa duree reelle (F1.3). */
+function rejouerVoyage(parcelles) {
+    calqueTrain.clearLayers();
+    if (animationTrainId) cancelAnimationFrame(animationTrainId);
+    if (!parcelles.length) return;
+
+    const totalMinutes = parcelles.reduce((s, p) => s + Math.max(p.dureeMinutes, 1), 0) || 1;
+    const icone = L.divIcon({ className: '', html: '<div class="train-icone">🚂</div>', iconSize: [22, 22], iconAnchor: [11, 11] });
+    const marqueurTrain = L.marker(parcelles[0].points[0], { icon: icone }).addTo(calqueTrain);
+
+    let indexParcelle = 0;
+    let debutParcelleMs = null;
+
+    function step(horodatage) {
+        const parcelle = parcelles[indexParcelle];
+        const dureeParcelleMs = Math.max((Math.max(parcelle.dureeMinutes, 1) / totalMinutes) * DUREE_REPLAY_MS, 300);
+        if (debutParcelleMs === null) debutParcelleMs = horodatage;
+        const t = Math.min((horodatage - debutParcelleMs) / dureeParcelleMs, 1);
+        marqueurTrain.setLatLng(pointSurTrace(parcelle.points, t));
+
+        if (t >= 1) {
+            indexParcelle++;
+            debutParcelleMs = null;
+            if (indexParcelle >= parcelles.length) { animationTrainId = null; return; }
+        }
+        animationTrainId = requestAnimationFrame(step);
+    }
+    animationTrainId = requestAnimationFrame(step);
+}
+
+const btnRejouer = document.getElementById('btnRejouerVoyage');
+btnRejouer.addEventListener('click', () => {
+    if (dernierTrajetActif) rejouerVoyage(dernierTrajetActif);
+});
+
 selectVoyage.addEventListener('change', () => {
     calqueHabillage.clearLayers();
-    if (!selectVoyage.value) return;
+    calqueTrain.clearLayers();
+    if (animationTrainId) cancelAnimationFrame(animationTrainId);
+    dernierTrajetActif = null;
+    btnRejouer.disabled = true;
+
+    if (!selectVoyage.value) {
+        reinitialiserVoies();
+        return;
+    }
 
     fetch(`/api/voyage/${selectVoyage.value}/habillage`)
         .then(r => r.json())
@@ -242,6 +389,13 @@ selectVoyage.addEventListener('change', () => {
             if (pts.length > 1) {
                 carte.fitBounds(pts, { padding: [40, 40] });
             }
+
+            // Distingue le trajet reel de ce voyage du reste du reseau + lance l'effet waouh
+            const { idsSegmentsActifs, parcelles } = calculerTrajetReel(data);
+            mettreEnValeurSegments(idsSegmentsActifs);
+            dernierTrajetActif = parcelles;
+            btnRejouer.disabled = false;
+            rejouerVoyage(parcelles);
         })
         .catch(err => console.error('Erreur habillage voyage:', err));
 });

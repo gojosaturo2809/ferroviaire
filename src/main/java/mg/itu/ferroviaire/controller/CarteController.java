@@ -61,6 +61,8 @@ public class CarteController {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("id", s.getId());
             m.put("code", s.getCodeSegment());
+            m.put("gareDepartId", s.getGareDepartId());
+            m.put("gareArriveeId", s.getGareArriveeId());
             m.put("longueurKm", s.getLongueurKm());
             m.put("trace", s.getTrace());
             segmentsJson.add(m);
