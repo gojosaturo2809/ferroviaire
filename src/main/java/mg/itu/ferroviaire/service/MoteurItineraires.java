@@ -146,6 +146,8 @@ public class MoteurItineraires {
         double distance = Math.abs(gareArrivee.getPkOrdre() - gareDepart.getPkOrdre()); // approx via PK (cf. ST_Length en prod)
 
         return new SegmentItineraire(
+                gareDepart.getId(),
+                gareArrivee.getId(),
                 gareDepart.getNom(),
                 gareArrivee.getNom(),
                 effectiveDepart(depart),

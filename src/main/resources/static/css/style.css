@@ -562,6 +562,22 @@ select:focus, input:focus {
     cursor: not-allowed;
 }
 
+.etiquette-distance {
+    background: var(--ardoise);
+    color: var(--creme-fonce);
+    border: none;
+    box-shadow: none;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 1px 5px;
+    border-radius: 8px;
+    opacity: 0.85;
+}
+
+.etiquette-distance::before {
+    display: none;
+}
+
 /* F1.4 : popup "gare la plus proche" au clic sur la carte */
 
 .popup-suggestion .leaflet-popup-content-wrapper {
@@ -888,6 +904,59 @@ select:focus, input:focus {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* Page recherche : liste interactive + mini-carte du trajet (F2.4) */
+
+.recherche-resultats {
+  display: grid;
+  grid-template-columns: 1fr 460px;
+  gap: 1.6rem;
+  align-items: start;
+}
+
+.recherche-resultats__carte {
+  position: sticky;
+  top: 1.4rem;
+}
+
+.carte-conteneur--recherche {
+  height: 560px;
+}
+
+.carte-conteneur--recherche #carteRecherche {
+  width: 100%;
+  height: 100%;
+  background: var(--ardoise-clair);
+}
+
+.recherche-resultats__astuce {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--creme-fonce);
+  opacity: 0.8;
+  margin-top: 0.6rem;
+  text-align: center;
+}
+
+.ticket-itineraire--cliquable {
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+
+.ticket-itineraire--cliquable:hover {
+  border-color: var(--vert-rail-clair);
+}
+
+.ticket-itineraire--active {
+  border-color: var(--jaune-signal);
+}
+
+@media (max-width: 1180px) {
+  .recherche-resultats { grid-template-columns: 1fr; }
+  .recherche-resultats__carte { position: static; }
+  .carte-conteneur--recherche { height: 420px; }
 }
 
 /* ---------- Responsive ---------- */

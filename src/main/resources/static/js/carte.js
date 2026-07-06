@@ -20,34 +20,10 @@ const marqueursGares = {}; // id -> L.Marker
 let gareSelectionneeId = null;
 
 const segmentsIndex = []; // {id, gareDepartId, gareArriveeId, latlngs, poly}
-const grapheVoies = {};   // gareId -> [{versId, segment}]
+let grapheVoies = {};     // construit via construireGraphe() (reseau-graphe.js) une fois /api/reseau charge
 const calqueTrain = L.layerGroup().addTo(carte);
 let animationTrainId = null;
 let dernierTrajetActif = null; // {segmentsOrdonnes, dureesMinutes} pour le bouton "Rejouer"
-
-function ajouterArc(a, b, segment) {
-    if (!grapheVoies[a]) grapheVoies[a] = [];
-    grapheVoies[a].push({ versId: b, segment });
-}
-
-/** Retrouve la suite de segments reels reliant deux gares (BFS, gere les gares non desservies entre deux arrets). */
-function chercherCheminSegments(depuisId, versId) {
-    if (depuisId === versId) return [];
-    const visites = new Set([depuisId]);
-    const file = [{ gareId: depuisId, chemin: [] }];
-    while (file.length) {
-        const { gareId, chemin } = file.shift();
-        const voisins = grapheVoies[gareId] || [];
-        for (const { versId: suivantId, segment } of voisins) {
-            if (visites.has(suivantId)) continue;
-            const nouveauChemin = [...chemin, { segment, depart: gareId, arrivee: suivantId }];
-            if (suivantId === versId) return nouveauChemin;
-            visites.add(suivantId);
-            file.push({ gareId: suivantId, chemin: nouveauChemin });
-        }
-    }
-    return [];
-}
 
 function couleurStatut(statut) {
     if (statut === 'PRINCIPALE') return '#C2622D';
@@ -143,6 +119,11 @@ fetch('/api/reseau')
         data.segments.forEach(seg => {
             const latlngs = seg.trace.map(p => [p[0], p[1]]);
             const poly = L.polyline(latlngs, styleVoieDefaut).addTo(calqueVoies);
+            poly.bindTooltip(seg.longueurKm.toFixed(1) + ' km', {
+                permanent: true,
+                direction: 'center',
+                className: 'etiquette-distance'
+            });
             segmentsIndex.push({
                 id: seg.id,
                 gareDepartId: seg.gareDepartId,
@@ -150,9 +131,8 @@ fetch('/api/reseau')
                 latlngs,
                 poly
             });
-            ajouterArc(seg.gareDepartId, seg.gareArriveeId, seg);
-            ajouterArc(seg.gareArriveeId, seg.gareDepartId, seg);
         });
+        grapheVoies = construireGraphe(data.segments);
 
         data.gares.forEach(gare => {
             const marqueur = iconeGare(gare).addTo(calqueGares);
@@ -302,7 +282,7 @@ function calculerTrajetReel(data) {
     for (let i = 0; i < arretsValides.length - 1; i++) {
         const a = arretsValides[i];
         const b = arretsValides[i + 1];
-        const chemin = chercherCheminSegments(a.gareId, b.gareId);
+        const chemin = chercherCheminSegments(grapheVoies, a.gareId, b.gareId);
         const points = [[a.lat, a.lng]];
 
         chemin.forEach(etape => {

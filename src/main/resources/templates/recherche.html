@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rechercher un trajet — SIG Ferroviaire</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 </head>
 <body>
 
@@ -69,14 +71,17 @@
             Aucun itinéraire trouvé pour cette combinaison gare / heure. Essayez une autre heure de départ.
         </div>
 
+        <div class="recherche-resultats" th:if="${not aucunResultat}">
+        <div class="recherche-resultats__liste">
+
         <!-- Trajets directs (F2.3.1) -->
-        <section class="section-resultats" th:if="${not aucunResultat and not #lists.isEmpty(propositionsDirectes)}">
+        <section class="section-resultats" th:if="${not #lists.isEmpty(propositionsDirectes)}">
             <h2 class="section-resultats__titre">
                 Trajets directs
                 <span class="pastille-compte" th:text="${#lists.size(propositionsDirectes)}"></span>
             </h2>
 
-            <div class="ticket-itineraire" th:each="prop : ${propositionsDirectes}">
+            <div class="ticket-itineraire ticket-itineraire--cliquable" th:each="prop : ${propositionsDirectes}">
                 <div class="ticket-itineraire__bande"></div>
                 <div class="ticket-itineraire__corps">
                     <div class="ticket-itineraire__resume">
@@ -89,7 +94,8 @@
                         </div>
                     </div>
 
-                    <div class="parcours-segment" th:each="seg : ${prop.segments}">
+                    <div class="parcours-segment" th:each="seg : ${prop.segments}"
+                         th:attr="data-gare-depart-id=${seg.gareDepartId},data-gare-arrivee-id=${seg.gareArriveeId}">
                         <div class="parcours-segment__horaires">
                             <div th:text="${#temporals.format(seg.heureDepart, 'HH:mm')}"></div>
                             <div th:text="${#temporals.format(seg.heureArrivee, 'HH:mm')}"></div>
@@ -104,13 +110,13 @@
         </section>
 
         <!-- Trajets avec escale (F2.3.2) -->
-        <section class="section-resultats" th:if="${not aucunResultat and not #lists.isEmpty(propositionsEscale)}">
+        <section class="section-resultats" th:if="${not #lists.isEmpty(propositionsEscale)}">
             <h2 class="section-resultats__titre section-resultats__titre--escale">
                 Trajets avec escale
                 <span class="pastille-compte" th:text="${#lists.size(propositionsEscale)}"></span>
             </h2>
 
-            <div class="ticket-itineraire ticket-itineraire--escale" th:each="prop : ${propositionsEscale}">
+            <div class="ticket-itineraire ticket-itineraire--escale ticket-itineraire--cliquable" th:each="prop : ${propositionsEscale}">
                 <div class="ticket-itineraire__bande"></div>
                 <div class="ticket-itineraire__corps">
                     <div class="ticket-itineraire__resume">
@@ -124,7 +130,8 @@
                     </div>
 
                     <th:block th:each="seg, iterStat : ${prop.segments}">
-                        <div class="parcours-segment">
+                        <div class="parcours-segment"
+                             th:attr="data-gare-depart-id=${seg.gareDepartId},data-gare-arrivee-id=${seg.gareArriveeId}">
                             <div class="parcours-segment__horaires">
                                 <div th:text="${#temporals.format(seg.heureDepart, 'HH:mm')}"></div>
                                 <div th:text="${#temporals.format(seg.heureArrivee, 'HH:mm')}"></div>
@@ -145,10 +152,24 @@
             </div>
         </section>
 
+        </div>
+
+        <aside class="recherche-resultats__carte">
+            <div class="carte-conteneur carte-conteneur--recherche">
+                <div id="carteRecherche"></div>
+            </div>
+            <p class="recherche-resultats__astuce">Cliquez sur un trajet pour l'afficher sur la carte.</p>
+        </aside>
+
+        </div>
+
     </th:block>
 
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script th:src="@{/js/reseau-graphe.js}"></script>
 <script th:src="@{/js/recherche.js}"></script>
 
 </body>
