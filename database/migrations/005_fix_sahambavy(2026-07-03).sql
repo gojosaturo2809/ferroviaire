@@ -1,14 +1,3 @@
--- =====================================================
--- FIX : Sahambavy n'est pas une branche separee, c'est un
--- arret SUR la ligne principale (entre Alakamisy et Andrambovato).
--- L'ancien trace synthetique FCE-S1 (Fianarantsoa -> Sahambavy en
--- ligne quasi droite) creait une ligne parasite en travers de la
--- carte. On repositionne la gare sur la trace reelle et on
--- scinde FCE-02 en deux segments qui passent par Sahambavy.
--- Coordonnees reelles Sahambavy : -21.433, 47.283 (DB-City),
--- alignees sur le trace OSM le plus proche.
--- =====================================================
-
 DELETE FROM segment_voie WHERE code_segment = 'FCE-S1';
 DELETE FROM segment_voie WHERE code_segment = 'FCE-02';
 
