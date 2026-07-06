@@ -1,52 +1,60 @@
 package mg.itu.ferroviaire.entity;
 
-import jakarta.persistence.*;
-import org.locationtech.jts.geom.Point;
-
-@Entity
-@Table(name = "gare")
 public class Gare {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    public enum Statut {
+        PRINCIPALE("Gare principale"),
+        HALTE("Halte"),
+        TRI("Gare de triage");
 
-    @Column(nullable = false, unique = true)
-    private String nom;
+        private final String libelle;
 
-    @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
-    private Point point;
+        Statut(String libelle) {
+            this.libelle = libelle;
+        }
 
-    public Gare() {
+        public String getLibelle() {
+            return libelle;
+        }
     }
 
-    public Gare(Integer id, String nom, Point point) {
+    private Integer id;
+    private String nom;
+    private double latitude;
+    private double longitude;
+    private Statut statut;
+    private double pkOrdre; // position kilometrique le long de la ligne, pour l'ordre d'affichage
+
+    public Gare(Integer id, String nom, double latitude, double longitude, Statut statut, double pkOrdre) {
         this.id = id;
         this.nom = nom;
-        this.point = point;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.statut = statut;
+        this.pkOrdre = pkOrdre;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getNom() {
         return nom;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public Point getPoint() {
-        return point;
+    public double getLongitude() {
+        return longitude;
     }
 
-    public void setPoint(Point point) {
-        this.point = point;
+    public Statut getStatut() {
+        return statut;
+    }
+
+    public double getPkOrdre() {
+        return pkOrdre;
     }
 }

@@ -1,32 +1,32 @@
 package mg.itu.ferroviaire.entity;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "train")
 public class Train {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    public enum TypeTrain {
+        VOYAGEURS("Voyageurs"),
+        FRET("Fret"),
+        MICHELINE("Micheline");
 
-    @Column(nullable = false)
-    private String marque;
+        private final String libelle;
 
-    @Column(nullable = false)
-    private Integer vitesse;
+        TypeTrain(String libelle) {
+            this.libelle = libelle;
+        }
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type_train", nullable = false)
-    private TypeTrain typeTrain;
-
-    public Train() {
+        public String getLibelle() {
+            return libelle;
+        }
     }
 
-    public Train(Integer id, String marque, Integer vitesse, TypeTrain typeTrain) {
+    private Integer id;
+    private String marque;
+    private double vitesseMax;
+    private TypeTrain typeTrain;
+
+    public Train(Integer id, String marque, double vitesseMax, TypeTrain typeTrain) {
         this.id = id;
         this.marque = marque;
-        this.vitesse = vitesse;
+        this.vitesseMax = vitesseMax;
         this.typeTrain = typeTrain;
     }
 
@@ -34,31 +34,15 @@ public class Train {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getMarque() {
         return marque;
     }
 
-    public void setMarque(String marque) {
-        this.marque = marque;
-    }
-
-    public Integer getVitesse() {
-        return vitesse;
-    }
-
-    public void setVitesse(Integer vitesse) {
-        this.vitesse = vitesse;
+    public double getVitesseMax() {
+        return vitesseMax;
     }
 
     public TypeTrain getTypeTrain() {
         return typeTrain;
-    }
-
-    public void setTypeTrain(TypeTrain typeTrain) {
-        this.typeTrain = typeTrain;
     }
 }

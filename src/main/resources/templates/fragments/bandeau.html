@@ -1,0 +1,15 @@
+<div th:fragment="bandeau(pageActive)" class="bandeau">
+    <a href="/" style="display:flex;align-items:center;gap:0.9rem;">
+        <div class="bandeau__marque">
+            <div class="bandeau__pastille">FCE</div>
+            <div>
+                SIG&nbsp;Ferroviaire
+                <span class="bandeau__sous-titre">Réseau Madagascar</span>
+            </div>
+        </div>
+    </a>
+    <nav class="bandeau__nav">
+        <a href="/carte" class="bandeau__lien" th:classappend="${pageActive == 'carte'} ? 'bandeau__lien--actif' : ''">Carte du réseau</a>
+        <a href="/recherche" class="bandeau__lien" th:classappend="${pageActive == 'recherche'} ? 'bandeau__lien--actif' : ''">Rechercher un trajet</a>
+    </nav>
+</div>

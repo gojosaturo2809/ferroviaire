@@ -1,47 +1,32 @@
 package mg.itu.ferroviaire.entity;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "trajet")
 public class Trajet {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String nomLigne;
+    private Integer gareOrigineId;
+    private Integer gareTerminusId;
 
-    @ManyToOne
-    @JoinColumn(name = "gare_depart_id")
-    private Gare gareDepart;
-
-    @ManyToOne
-    @JoinColumn(name = "gare_arrive_id")
-    private Gare gareArrive;
-
-    public Trajet() {
+    public Trajet(Integer id, String nomLigne, Integer gareOrigineId, Integer gareTerminusId) {
+        this.id = id;
+        this.nomLigne = nomLigne;
+        this.gareOrigineId = gareOrigineId;
+        this.gareTerminusId = gareTerminusId;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public String getNomLigne() {
+        return nomLigne;
     }
 
-    public Gare getGareDepart() {
-        return gareDepart;
+    public Integer getGareOrigineId() {
+        return gareOrigineId;
     }
 
-    public void setGareDepart(Gare gareDepart) {
-        this.gareDepart = gareDepart;
-    }
-
-    public Gare getGareArrive() {
-        return gareArrive;
-    }
-
-    public void setGareArrive(Gare gareArrive) {
-        this.gareArrive = gareArrive;
+    public Integer getGareTerminusId() {
+        return gareTerminusId;
     }
 }
