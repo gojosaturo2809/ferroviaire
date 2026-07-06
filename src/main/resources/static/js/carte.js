@@ -165,7 +165,8 @@ fetch('/api/reseau')
             marqueur.on('mouseout', () => {
                 if (gare.id !== gareSelectionneeId) marqueur.setStyle({ weight: 2 });
             });
-            marqueur.on('click', () => {
+            marqueur.on('click', (e) => {
+                L.DomEvent.stopPropagation(e);
                 selectionnerGare(gare.id);
                 chargerFluxGare(gare.id);
             });
@@ -174,6 +175,50 @@ fetch('/api/reseau')
         });
     })
     .catch(err => console.error('Erreur chargement réseau:', err));
+
+// -------------------- F1.4 : suggestion de la gare la plus proche au clic sur la carte --------------------
+
+function gareLaPlusProche(latlng) {
+    let meilleur = null, meilleureDistanceM = Infinity;
+    Object.values(marqueursGares).forEach(m => {
+        const d = latlng.distanceTo(m.getLatLng());
+        if (d < meilleureDistanceM) { meilleureDistanceM = d; meilleur = m; }
+    });
+    return meilleur ? { marqueur: meilleur, distanceM: meilleureDistanceM } : null;
+}
+
+function formaterDistance(metres) {
+    return metres >= 1000 ? (metres / 1000).toFixed(1) + ' km' : Math.round(metres) + ' m';
+}
+
+carte.on('click', (e) => {
+    const proche = gareLaPlusProche(e.latlng);
+    if (!proche) return;
+    const gare = proche.marqueur.gareData;
+
+    const contenu = document.createElement('div');
+    contenu.className = 'suggestion-gare';
+    contenu.innerHTML =
+        '<strong>Gare la plus proche</strong>' +
+        `<p>${gare.nom} <span class="suggestion-distance">à ${formaterDistance(proche.distanceM)}</span></p>`;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'bouton-suggestion';
+    btn.textContent = 'Consulter cette gare';
+    btn.addEventListener('click', () => {
+        selectionnerGare(gare.id);
+        chargerFluxGare(gare.id);
+        if (typeof selectGare !== 'undefined' && selectGare) selectGare.value = gare.id;
+        carte.closePopup();
+    });
+    contenu.appendChild(btn);
+
+    L.popup({ className: 'popup-suggestion', closeButton: true })
+        .setLatLng(e.latlng)
+        .setContent(contenu)
+        .openOn(carte);
+});
 
 // -------------------- F1.2 : consultation gare a un instant t --------------------
 

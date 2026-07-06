@@ -1,11 +1,3 @@
--- =====================================================
--- TRACE REELLE (OSM/HDX railways_lines.shp, stitched)
--- Remplace le trace synthetique (2 points) par la vraie
--- geometrie de la voie FCE Fianarantsoa - Manakara.
--- Gares principales re-alignees sur la ligne reelle.
--- Branche FCE-S1 (Sahambavy) non couverte par le jeu OSM
--- dans ce corridor -> trace synthetique conservee.
--- =====================================================
 
 -- Realignement des gares sur la trace reelle
 UPDATE gare SET point = ST_SetSRID(ST_MakePoint(47.090736, -21.450922), 4326) WHERE id = 1;

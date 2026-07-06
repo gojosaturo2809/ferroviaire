@@ -562,6 +562,62 @@ select:focus, input:focus {
     cursor: not-allowed;
 }
 
+/* F1.4 : popup "gare la plus proche" au clic sur la carte */
+
+.popup-suggestion .leaflet-popup-content-wrapper {
+    background: var(--ardoise);
+    color: var(--creme);
+    border-radius: var(--rayon);
+    box-shadow: var(--ombre);
+}
+
+.popup-suggestion .leaflet-popup-tip {
+    background: var(--ardoise);
+}
+
+.suggestion-gare {
+    font-family: var(--font-body);
+    min-width: 170px;
+}
+
+.suggestion-gare strong {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--jaune-signal);
+    margin-bottom: 0.3rem;
+}
+
+.suggestion-gare p {
+    margin: 0 0 0.6rem;
+    font-size: 0.95rem;
+}
+
+.suggestion-distance {
+    color: var(--creme-fonce);
+    font-size: 0.8rem;
+}
+
+.bouton-suggestion {
+    width: 100%;
+    background: var(--rouille);
+    color: var(--creme);
+    border: none;
+    border-radius: var(--rayon);
+    padding: 0.4rem 0.6rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.bouton-suggestion:hover {
+    background: var(--rouille-clair);
+}
+
 /* Legende carte (statuts de gare) */
 
 .legende-carte {
