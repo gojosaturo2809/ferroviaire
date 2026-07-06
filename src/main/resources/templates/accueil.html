@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIG Ferroviaire — Réseau Madagascar</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/bandeau :: bandeau('accueil')}"></div>
+
+<div class="page">
+
+    <section class="heros">
+        <div>
+            <p class="heros__eyebrow">Système d'information géographique</p>
+            <h1 class="heros__titre">Le réseau ferré de<br><em>Fianarantsoa à Manakara</em>,<br>gare par gare.</h1>
+            <p class="heros__texte">
+                Consultez en temps réel les départs, les arrêts en transit et les correspondances
+                du réseau FCE. Calculez vos itinéraires directs ou avec escale sur une carte
+                fidèle au tracé réel des voies.
+            </p>
+            <div class="heros__actions">
+                <a href="/carte" class="bouton bouton--principal">Ouvrir la carte</a>
+                <a href="/recherche" class="bouton bouton--secondaire">Rechercher un trajet</a>
+            </div>
+        </div>
+
+        <div class="heros__ticket">
+            <div class="heros__ticket-titre">Fiche horaire — FCE-101</div>
+            <div class="heros__ticket-ligne">
+                <span class="heros__ticket-label">Départ</span>
+                <span class="heros__ticket-valeur">Fianarantsoa · 07h00</span>
+            </div>
+            <div class="heros__ticket-ligne">
+                <span class="heros__ticket-label">Escale</span>
+                <span class="heros__ticket-valeur">Tolongoina · Arrêt 20 min</span>
+            </div>
+            <div class="heros__ticket-ligne">
+                <span class="heros__ticket-label">Arrivée</span>
+                <span class="heros__ticket-valeur">Manakara · 13h20</span>
+            </div>
+            <div class="heros__ticket-ligne">
+                <span class="heros__ticket-label">Distance</span>
+                <span class="heros__ticket-valeur">163 km (tracé réel)</span>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="grille-modules">
+            <div class="carte-module">
+                <div class="carte-module__num">Module 01</div>
+                <h3 class="carte-module__titre">Cartographie interactive</h3>
+                <p class="carte-module__texte">
+                    Rendu vectoriel des voies et des gares sur fond OpenStreetMap. Cliquez sur une
+                    gare pour voir tous les départs et transits à une heure donnée.
+                </p>
+            </div>
+            <div class="carte-module">
+                <div class="carte-module__num">Module 02</div>
+                <h3 class="carte-module__titre">Moteur d'itinéraires</h3>
+                <p class="carte-module__texte">
+                    Calcule systématiquement les trajets directs et les trajets avec escale,
+                    en validant chaque correspondance entre deux trains.
+                </p>
+            </div>
+            <div class="carte-module">
+                <div class="carte-module__num">Module 03</div>
+                <h3 class="carte-module__titre">Planification & données</h3>
+                <p class="carte-module__texte">
+                    Chronologie des parcelles de voie et requêtes temporelles par gare,
+                    construites sur les fiches horaires de chaque train.
+                </p>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+</body>
+</html>

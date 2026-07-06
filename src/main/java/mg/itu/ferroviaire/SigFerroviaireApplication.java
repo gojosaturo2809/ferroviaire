@@ -4,9 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Ferroviaire {
+public class SigFerroviaireApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Ferroviaire.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SigFerroviaireApplication.class, args);
+    }
+
 }
